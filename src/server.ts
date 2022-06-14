@@ -4,6 +4,9 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
 (async () => {
 
+  // Source : https://stackoverflow.com/questions/3809401/what-is-a-good-regular-expression-to-match-a-url
+  const urlRegex =/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+
   // Init the Express application
   const app = express();
 
@@ -41,12 +44,21 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Displays a simple message to the user
   app.get( "/filteredimage", async ( req, res ) => {
     const imageUrl:string = req.query.image_url;
-    console.log(imageUrl);
+    console.log(`Image url `+imageUrl);
     if(!imageUrl||imageUrl==""){
-      return res.status(404).send({msg:`image_url is required`})
+      return res.status(400).send({msg:`image_url is required`})
     }
+
+    //exp : http://www.google.com
+    if(!imageUrl.match(urlRegex)){
+      return res.status(402).send({msg:`invalid image_url format`})
+    }
+
     const savedLocalFile = await filterImageFromURL(imageUrl)
-    return res.status(200).sendFile(savedLocalFile);
+    return res.status(200).sendFile(savedLocalFile,async ()=>{
+      console.log("delete file after response");
+      await deleteLocalFiles([savedLocalFile])
+    });
   } );
   
 
