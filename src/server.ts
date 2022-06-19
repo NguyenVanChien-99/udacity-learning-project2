@@ -61,6 +61,9 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     });
   } );
   
+  app.get( "/", async ( req, res ) => {
+      return res.status(200).send({msg:`ok`})
+  } );
 
   // Start the Server
   app.listen( port, () => {
