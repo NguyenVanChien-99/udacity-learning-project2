@@ -17,7 +17,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   app.use(bodyParser.json());
 
     //CORS Should be restricted
-    app.use(function(req, res, next) {
+    app.use(function(req:express.Request, res:express.Response, next:express.NextFunction) {
       res.header("Access-Control-Allow-Origin", "http://localhost:8100");
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
       next();
@@ -42,7 +42,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/filteredimage", async ( req, res ) => {
+  app.get( "/filteredimage", async ( req: express.Request, res:express.Response ) => {
     const imageUrl:string = req.query.image_url;
     console.log(`Image url `+imageUrl);
     if(!imageUrl||imageUrl==""){
@@ -54,14 +54,14 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       return res.status(402).send({msg:`invalid image_url format`})
     }
 
-    const savedLocalFile = await filterImageFromURL(imageUrl)
+    const savedLocalFile:string = await filterImageFromURL(imageUrl)
     return res.status(200).sendFile(savedLocalFile,async ()=>{
       console.log("delete file after response");
       await deleteLocalFiles([savedLocalFile])
     });
   } );
   
-  app.get( "/", async ( req, res ) => {
+  app.get( "/", async ( req: express.Request, res:express.Response ) => {
       return res.status(200).send({msg:`ok`})
   } );
 
